@@ -7,7 +7,7 @@ namespace Cleanup.Models
     {
         public CleanupContext(DbContextOptions<CleanupContext> options) : base(options) {}
         public DbSet<User> users {get;set;}
-        public DbSet<Cleanup> cleanups {get;set;}
+        public DbSet<CleanupEvent> cleanups {get;set;}
         public DbSet<Message> messages {get;set;}
         public DbSet<Image> images {get;set;}
     }

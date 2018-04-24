@@ -8,7 +8,7 @@ namespace Cleanup.Models
     public class Image : BaseEntity
     {
         public string FileName{get;set;}
-        [ForeignKey("Cleanup")]
+        [ForeignKey("CleanupEvent")]
         public int CleanupId{get;set;}
     }
 }

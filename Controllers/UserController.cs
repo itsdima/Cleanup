@@ -9,10 +9,10 @@ using System.Text.RegularExpressions;
 
 namespace Cleanup
 {
-    public class LoginController : Controller //Controller for User Login/Registation
+    public class UserController : Controller //Controller for User Login/Registation
     {
         private CleanupContext _context;
-        public LoginController(CleanupContext context)
+        public UserController(CleanupContext context)
         {
             _context = context;
         }
@@ -53,7 +53,7 @@ namespace Cleanup
                     _context.SaveChanges();
                 }
                 HttpContext.Session.SetInt32("activeUser", activeUser.Id);
-                return RedirectToAction("Clean", "Activity");//Go to actual site, modify later
+                return RedirectToAction("Dashboard", "Cleanup");//Go to actual site
             }
             return View("Index"); //Failed registration attempt goes here
         }
@@ -69,7 +69,7 @@ namespace Cleanup
                 if(0!= Hasher.VerifyHashedPassword(possibleLogin[0], possibleLogin[0].Password, Password)) //Confirm hashed passsword
                 {
                     HttpContext.Session.SetInt32("activeUser", possibleLogin[0].Id);
-                    return RedirectToAction("Clean", "Activity");//Go to actual site, modify later
+                    return RedirectToAction("Dashboard", "Cleanup");//Go to actual site
                 }
             }
             ViewBag.error = "Incorrect Login Information"; //Failed login attempt error message
