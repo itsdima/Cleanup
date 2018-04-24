@@ -28,8 +28,12 @@ namespace Cleanup.Models
         [UniqueEmail] //Needs new validation
         public string Email{get;set;}
         public string PreviousEmail {get;set;}
+        [Range(0,Int32.MaxValue)]
         public int Score{get;set;}
+        [Range(0,Int32.MaxValue)]
         public int Token{get;set;}
+        [Range(0,9)]
+        public int UserLevel{get;set;}
         [MinLength(8)]
         [Display(Name="Password: ")]
         [Required(ErrorMessage="Password must not be blank")]
