@@ -19,10 +19,22 @@ namespace Cleanup
         //Untouched from copy/paste
         [HttpGet]
         [Route("")]
-        public IActionResult Index() //Display Login/Reg form
+        public IActionResult Index() //Display Welcome page
         {
             HttpContext.Session.Clear();
             return View();
+        }
+        [HttpGet]
+        [Route("signup")]
+        public IActionResult IndexReg(){
+            ViewBag.reg = true;
+            return View("Index");
+        }
+        [HttpGet]
+        [Route("signin")]
+        public IActionResult IndexLog(){
+            ViewBag.log = true;
+            return View("Index");
         }
         //modified
         [HttpPost]
@@ -60,18 +72,20 @@ namespace Cleanup
         //Modified
         [HttpPost]
         [Route("login")]
-        public IActionResult Login(string UserName, string Password) //Login Route
+        public IActionResult Login(UserLoginViewModel model) //Login Route
         {
-            List<User> possibleLogin = _context.users.Where( u => (string)u.UserName == (string)UserName).ToList(); //Check for existing username
-            if(possibleLogin.Count == 1)//Due to unique validation, if username exists, only 1 item should be returned
-            {
-                var Hasher = new PasswordHasher<User>();
-                if(0!= Hasher.VerifyHashedPassword(possibleLogin[0], possibleLogin[0].Password, Password)) //Confirm hashed passsword
+            if (ModelState.IsValid){ //so we only check the db if user input the right information
+                List<User> possibleLogin = _context.users.Where( u => (string)u.UserName == (string)model.UserNameLogin).ToList(); //Check for existing username
+                if(possibleLogin.Count == 1)//Due to unique validation, if username exists, only 1 item should be returned
                 {
-                    HttpContext.Session.SetInt32("activeUser", possibleLogin[0].Id);
-                    return RedirectToAction("Dashboard", "Cleanup");//Go to actual site
+                    var Hasher = new PasswordHasher<User>();
+                    if(0!= Hasher.VerifyHashedPassword(possibleLogin[0], possibleLogin[0].Password, model.PasswordLogin)) //Confirm hashed passsword
+                    {
+                        HttpContext.Session.SetInt32("activeUser", possibleLogin[0].Id);
+                        return RedirectToAction("Dashboard", "Cleanup");//Go to actual site
+                    }
                 }
-            }
+            } 
             ViewBag.error = "Incorrect Login Information"; //Failed login attempt error message
             return View("Index"); //Failed login attempt goes here
         }
