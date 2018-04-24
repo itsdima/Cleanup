@@ -9,25 +9,37 @@ using System.Text.RegularExpressions;
 
 namespace Cleanup
 {
-    public class LoginController : Controller //Controller for User Login/Registation
+    public class UserController : Controller //Controller for User Login/Registation
     {
         private CleanupContext _context;
-        public LoginController(CleanupContext context)
+        public UserController(CleanupContext context)
         {
             _context = context;
         }
         //Untouched from copy/paste
         [HttpGet]
         [Route("")]
-        public IActionResult Index() //Display Login/Reg form
+        public IActionResult Index() //Display Welcome page
         {
             HttpContext.Session.Clear();
             return View();
         }
+        [HttpGet]
+        [Route("signup")]
+        public IActionResult IndexReg(){
+            ViewBag.reg = true;
+            return View("Index");
+        }
+        [HttpGet]
+        [Route("signin")]
+        public IActionResult IndexLog(){
+            ViewBag.log = true;
+            return View("Index");
+        }
         //modified
         [HttpPost]
         [Route("register")]
-        public IActionResult Register(UserViewModel model) //Register User Route
+        public IActionResult Register(UserRegisterViewModel model) //Register User Route
         {
             if (ModelState.IsValid)
             {
@@ -53,25 +65,27 @@ namespace Cleanup
                     _context.SaveChanges();
                 }
                 HttpContext.Session.SetInt32("activeUser", activeUser.Id);
-                return RedirectToAction("Clean", "Activity");//Go to actual site, modify later
+                return RedirectToAction("Dashboard", "Cleanup");//Go to actual site
             }
             return View("Index"); //Failed registration attempt goes here
         }
         //Modified
         [HttpPost]
         [Route("login")]
-        public IActionResult Login(string UserName, string Password) //Login Route
+        public IActionResult Login(UserLoginViewModel model) //Login Route
         {
-            List<User> possibleLogin = _context.users.Where( u => (string)u.UserName == (string)UserName).ToList(); //Check for existing username
-            if(possibleLogin.Count == 1)//Due to unique validation, if username exists, only 1 item should be returned
-            {
-                var Hasher = new PasswordHasher<User>();
-                if(0!= Hasher.VerifyHashedPassword(possibleLogin[0], possibleLogin[0].Password, Password)) //Confirm hashed passsword
+            if (ModelState.IsValid){ //so we only check the db if user input the right information
+                List<User> possibleLogin = _context.users.Where( u => (string)u.UserName == (string)model.UserNameLogin).ToList(); //Check for existing username
+                if(possibleLogin.Count == 1)//Due to unique validation, if username exists, only 1 item should be returned
                 {
-                    HttpContext.Session.SetInt32("activeUser", possibleLogin[0].Id);
-                    return RedirectToAction("Clean", "Activity");//Go to actual site, modify later
+                    var Hasher = new PasswordHasher<User>();
+                    if(0!= Hasher.VerifyHashedPassword(possibleLogin[0], possibleLogin[0].Password, model.PasswordLogin)) //Confirm hashed passsword
+                    {
+                        HttpContext.Session.SetInt32("activeUser", possibleLogin[0].Id);
+                        return RedirectToAction("Dashboard", "Cleanup");//Go to actual site
+                    }
                 }
-            }
+            } 
             ViewBag.error = "Incorrect Login Information"; //Failed login attempt error message
             return View("Index"); //Failed login attempt goes here
         }
@@ -126,7 +140,7 @@ namespace Cleanup
         }
         [HttpPost]
         [Route("process/update/user/{id}")]
-        public IActionResult ProcessUpdateUser(UserViewModel model, int UserId)
+        public IActionResult ProcessUpdateUser(UserUpdateViewModel model, int UserId)
         {
             int? activeId = HttpContext.Session.GetInt32("activeUser");
             if(activeId != null) //Checked to make sure user is actually logged in

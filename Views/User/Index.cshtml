@@ -1,0 +1,20 @@
+@if(ViewBag.reg == null && ViewBag.log == null){
+    <div id="welcome">
+    <h1>Welcome to <strong>CleanUp</strong>!</h1>
+    <i>Your right way to cleaner community.</i>
+    <br>
+    <a href="signup" class="btn btn-success">Sign Up</a>
+    <br>
+    <a href="signin" class="btn btn-success">Sign In</a>
+    </div>
+}
+else if (ViewBag.log == null){
+    <div id="reg-form">
+    @Html.Partial("RegistrationPartial")
+    </div>
+}
+else{
+    <div id="log-form">
+    @Html.Partial("LoginPartial")
+    </div>
+}

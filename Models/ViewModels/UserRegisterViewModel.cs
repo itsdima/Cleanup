@@ -1,12 +1,9 @@
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
-using Cleanup.Models;
 
 namespace Cleanup.Models
 {
-    public class UserViewModel : BaseEntity
+    public class UserRegisterViewModel : BaseEntity
     {
         [Display(Name = "First Name: ")]
         [Required(ErrorMessage="First name must not be blank")]

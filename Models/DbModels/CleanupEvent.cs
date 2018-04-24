@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Cleanup.Models
 {
-    public class Cleanup : BaseEntity
+    public class CleanupEvent : BaseEntity
     {
         public double Latitude{get;set;}
         public double Longitude{get;set;}
@@ -16,7 +16,7 @@ namespace Cleanup.Models
         [ForeignKey("User")]
         public int CreatedByUserId{get;set;}
         public List<Image> TrashImages{get;set;}
-        public Cleanup()
+        public CleanupEvent()
         {
             TrashImages = new List<Image>();
         }
