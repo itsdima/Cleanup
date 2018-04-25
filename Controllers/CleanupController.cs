@@ -50,6 +50,7 @@ namespace Cleanup
                     if(ModelState.IsValid)
                     {
                         CleanupEvent newCleanup = new CleanupEvent{
+                            Title = model.Title,
                             DescriptionOfArea = model.DescriptionOfArea,
                             DescriptionOfTrash = model.DescriptionOfTrash,
                             UserId = (int)activeId,
@@ -61,7 +62,8 @@ namespace Cleanup
                         _context.Add(newCleanup);
                         activeUser.Token-=1;
                         _context.SaveChanges();
-                        return RedirectToAction("Dashboard");
+                        CleanupEvent freshCleanup = _context.cleanups.OrderBy( c => c.CreatedAt ).Reverse().First();
+                        return RedirectToAction("AddPhoto", new { id = freshCleanup.CleanupId});
                     }
                 }
                 else
@@ -105,6 +107,38 @@ namespace Cleanup
                         _context.SaveChanges();
                         return RedirectToAction("Dashboard");
                     }
+                }
+            }
+            return RedirectToAction("Index", "User");
+        }
+        [HttpGet]
+        [Route("add/photos/cleanup/{id}")]
+        public IActionResult AddPhoto(int id)
+        {
+            int? activeId = HttpContext.Session.GetInt32("activeUser");
+            if(activeId != null) //Checked to make sure user is actually logged in
+            {
+                List<CleanupEvent> possibleCleanup = _context.cleanups.Where( c => c.CleanupId == id).Include( c => c.Images ).ToList();
+                if(possibleCleanup.Count == 1)
+                {
+                    ViewBag.Cleanup = possibleCleanup[0];
+                    return View();
+                }
+            }
+            return RedirectToAction("Index", "User");
+        }
+        [HttpPost]
+        [Route("add/photos/cleanup/{id}")]
+        public IActionResult ProcessPhoto(int id)
+        {
+            int? activeId = HttpContext.Session.GetInt32("activeUser");
+            if(activeId != null) //Checked to make sure user is actually logged in
+            {
+                List<CleanupEvent> possibleCleanup = _context.cleanups.Where( c => c.CleanupId == id).Include( c => c.Images ).ToList();
+                if(possibleCleanup.Count == 1)
+                {
+                    //Code to change photo filename, ERIC LOOK HERE
+                    return RedirectToAction("AddPhoto", new { id = possibleCleanup[0].CleanupId}); //After new photo added, redirect to photo add page so user can add more (up to 5 max)
                 }
             }
             return RedirectToAction("Index", "User");
