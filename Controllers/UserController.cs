@@ -40,7 +40,6 @@ namespace Cleanup
             ViewBag.log = true;
             return View("Index");
         }
-        //modified
         [HttpPost]
         [Route("register")]
         public IActionResult Register(UserRegisterViewModel model, IFormFile ProfilePic) //Register User Route //pass the file from the form
@@ -80,10 +79,11 @@ namespace Cleanup
                 TempData["pic"] = splitrootfile[1]; //for testing only to display the image path 
                 return RedirectToAction("Dashboard", "Cleanup");//Go to actual site
             }
+
             }
+
             return View("RegistrationPartial"); //Failed registration attempt goes here
         }
-        //Modified
         [HttpPost]
         [Route("login")]
         public IActionResult Login(UserLoginViewModel model) //Login Route
@@ -102,9 +102,24 @@ namespace Cleanup
                 }
             } 
             ViewBag.error = "Incorrect Login Information"; //Failed login attempt error message
-            return View("Index"); //Failed login attempt goes here
+            return View("LoginPartial"); //Failed login attempt goes here
         }
-        //New
+        [HttpGet]
+        [Route("user/{id}")]
+        public IActionResult ViewUser(int id)
+        {
+            int? activeId = HttpContext.Session.GetInt32("activeUser");
+            if(activeId != null) //Checked to make sure user is actually logged in
+            {
+                List<User> possibleUser = _context.users.Where( u => u.UserId == id).ToList();
+                if(possibleUser.Count == 1)
+                {
+                    ViewBag.user = possibleUser[0];
+                    return View();
+                }
+            }
+            return RedirectToAction("Index");
+        }
         [HttpGet]
         [Route("delete/user/{id}")]
         public IActionResult DeleteUser(int id) //Delete User Route
@@ -163,13 +178,12 @@ namespace Cleanup
                 User activeUser = _context.users.Single( u => u.UserId == (int)activeId);
                 if(id == (int)activeId || activeUser.UserLevel == 9) //User can only edit profile if own or user is admin
                 {
+                    //Note -> user is unable to edit password!! This needs to be fixed but not a priority
                     User updatedUser = _context.users.Single( u => u.UserId == id);
-                    //This Next line will likely need extensive testing!!
                     if(ModelState.IsValid)
                     {
                         updatedUser.FirstName = model.FirstName;
                         updatedUser.LastName = model.LastName;
-                        updatedUser.Password = model.Password;
                         updatedUser.UserName = model.UserName;
                         updatedUser.Email = model.Email;
                         updatedUser.ProfilePic = model.ProfilePic;
