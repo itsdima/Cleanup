@@ -14,6 +14,25 @@ namespace Cleanup
         {
             _context = context;
         }
+
+        [HttpGet]
+        [Route("test")]
+        public IActionResult Test(){
+            List<Dictionary<string, string>> markers = new List<Dictionary<string, string>>();
+            Dictionary<string, string> dict1 = new Dictionary<string, string>();
+            Dictionary<string, string> dict2 = new Dictionary<string, string>();
+            dict1["title"] = "test1test1test1test1test1test1"; //maxlength = 30!
+            dict1["lng"] = "47.644710";
+            dict1["lat"] = "-122.205378";
+            dict2["title"] = "test2";
+            dict2["lng"] = "47.626203";
+            dict2["lat"] = "-122.201258";
+            markers.Add(dict1);
+            markers.Add(dict2);
+            ViewBag.markers = markers;
+            return View("dashboard");
+        }
+
         [HttpGet]
         [Route("dashboard")] //Needs a legit Route
         public IActionResult Dashboard()
