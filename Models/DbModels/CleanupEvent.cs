@@ -19,8 +19,10 @@ namespace Cleanup.Models
         public int UserId { get; set; }
         public User User {get;set;}
         public List<Image> Images{get;set;}
+        public List<BoardMessage> BoardMessages {get;set;}
         public CleanupEvent()
         {
+            BoardMessages = new List<BoardMessage>();
             Images = new List<Image>();
         }
     }
