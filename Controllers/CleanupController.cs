@@ -40,6 +40,9 @@ namespace Cleanup
             int? activeId = HttpContext.Session.GetInt32("activeUser");
             if(activeId != null) //Checked to make sure user is actually logged in
             {
+                User active = _context.users.Single(u => u.UserId == activeId);
+                ViewBag.active = active; 
+
                 ViewBag.allCleanups = _context.cleanups.ToList(); //all registered cleanup's currently created.
                 return View("Dashboard");
             }

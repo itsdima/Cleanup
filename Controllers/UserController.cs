@@ -6,14 +6,18 @@ using System.Linq;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Identity;
 using System.Text.RegularExpressions;
+using Microsoft.AspNetCore.Hosting;
+using System.IO;
 
 namespace Cleanup
 {
     public class UserController : Controller //Controller for User Login/Registation
     {
+        private readonly IHostingEnvironment HE; //create new 'HE' for hosting environment to store files
         private CleanupContext _context;
-        public UserController(CleanupContext context)
+        public UserController(CleanupContext context, IHostingEnvironment he)
         {
+            HE = he; //initiate the hosting environment to store files
             _context = context;
         }
         //Untouched from copy/paste
@@ -38,17 +42,24 @@ namespace Cleanup
         }
         [HttpPost]
         [Route("register")]
-        public IActionResult Register(UserRegisterViewModel model) //Register User Route
+        public IActionResult Register(UserRegisterViewModel model, IFormFile ProfilePic) //Register User Route //pass the file from the form
         {
             if (ModelState.IsValid)
             {
-                User newUser = new User{ //Transfer from viewmodel to actual model, add default values
+                if (ProfilePic != null){ //aka if a picture was uploaded
+                    var filename = Path.Combine(HE.WebRootPath + "/images", Path.GetFileName(ProfilePic.FileName)); //stores a string of where the new file root should be
+                    String filestring = GetRandString(); //returns a string of numbers to randomize the file names
+                    String[] newfile = filename.Split("."); //creates an array of the file string before the period and after so we can add the randomized string
+                    String newFileString = newfile[0] + filestring + "." + newfile[1]; //puts the string back together including the random string
+                    String[] splitrootfile = newFileString.Split("wwwroot"); //creates a string with the path necessary to store and retrieve the image from the images folder 
+                    ProfilePic.CopyTo(new FileStream(newFileString, FileMode.Create)); //stores the new file into our full path which is what we made prior to splitting by wwwroot
+                User newUser = new User{ 
                     FirstName = model.FirstName,
                     LastName = model.LastName,
                     Email = model.Email,
                     UserName = model.UserName,
                     Password = model.Password,
-                    ProfilePic = model.ProfilePic,
+                    ProfilePic = splitrootfile[1], //store only the second half of the split path into database. We only need this part of the path to access the images
                     Token = 1,
                     Score = 0,
                     UserLevel = 0
@@ -65,8 +76,12 @@ namespace Cleanup
                 }
                 HttpContext.Session.SetString("userName", activeUser.UserName);
                 HttpContext.Session.SetInt32("activeUser", activeUser.UserId);
+                TempData["pic"] = splitrootfile[1]; //for testing only to display the image path 
                 return RedirectToAction("Dashboard", "Cleanup");//Go to actual site
             }
+
+            }
+
             return View("RegistrationPartial"); //Failed registration attempt goes here
         }
         [HttpPost]
@@ -184,6 +199,14 @@ namespace Cleanup
                 return RedirectToAction("Index");//...needs to redirect to somewhere that makes sense ##########
             }
             return RedirectToAction("Index");
+        }
+        public String GetRandString(){ // create a random string for storing more randomized file names
+            Random rand = new Random();
+            String Str = "";
+            for(var i = 0; i < 1; i++){
+                Str += rand.Next(0, 1000);
+            }
+            return Str;
         }
     }
 }

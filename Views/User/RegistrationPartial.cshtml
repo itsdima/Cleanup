@@ -1,7 +1,7 @@
 @model Cleanup.Models.UserRegisterViewModel;
 
 <h1>Registration</h1>
-    <form asp-controller="User" asp-action="Register" method="POST">
+    <form asp-controller="User" asp-action="Register" method="POST" enctype="multipart/form-data">
         <table>
             <tr>
                 <td><label asp-for="FirstName"></label></td>
@@ -25,7 +25,7 @@
             </tr>
             <tr>
                 <td><label asp-for="ProfilePic"></label></td>
-                <td><input asp-for="ProfilePic"></td>
+                <td><input type="file" name="ProfilePic"></td>
                 <td><span asp-validation-for="ProfilePic"></span></td>
             </tr>
             <tr>
