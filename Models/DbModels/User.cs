@@ -23,14 +23,17 @@ namespace Cleanup.Models
         [InverseProperty("User")]
         public List<CleanupEvent> CreatedCleanups{get;set;}
         [InverseProperty("Sender")]
-        public List<Message> Sent{get;set;}
+        public List<PrivateMessage> SentToUser{get;set;}
+        [InverseProperty("Sender")]
+        public List<BoardMessage> SentToBoard{get;set;}
         [InverseProperty("Recipient")]
-        public List<Message> Received{get;set;}
+        public List<PrivateMessage> Received{get;set;}
         public User()
         {
             CreatedCleanups = new List<CleanupEvent>();
-            Sent = new List<Message>();
-            Received = new List<Message>();
+            SentToUser = new List<PrivateMessage>();
+            SentToBoard = new List<BoardMessage>();
+            Received = new List<PrivateMessage>();
         }
     }
 }
