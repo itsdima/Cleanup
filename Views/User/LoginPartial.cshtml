@@ -1,5 +1,8 @@
 @model Cleanup.Models.UserLoginViewModel;
-
+    <div>
+        <div id="logo-wrap">
+        <img id="logo" src="/images/logo_shadow.png" alt="cleanup logo">
+        </div>
 <h1>Login</h1>
 @if (ViewBag.error != null){
         <span>@ViewBag.error</span>
@@ -7,16 +10,16 @@
 <form asp-controller="User" asp-action="Login" method="POST">
     <table>
         <tr>
-            <td><label asp-for="UserNameLogin"></label></td>
-            <td><input asp-for="UserNameLogin"></td>
-        </tr>
-        <tr>
-            <td><label asp-for="PasswordLogin"></label></td>
-            <td><input asp-for="PasswordLogin"></td>
+            <td></td>
+            <td><input class="form-control" asp-for="UserNameLogin" placeholder="Username"></td>
         </tr>
         <tr>
             <td></td>
-            <td><button type="submit" class="btn btn-default">Sign In</button></td>
+            <td><input class="form-control" asp-for="PasswordLogin" placeholder="Password"></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td><button style="width: 12em; margin: 0.3em;" type="submit" class="btn btn-success">Sign In</button></td>
         </tr>
     </table>
 </form>

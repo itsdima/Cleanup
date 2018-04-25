@@ -49,6 +49,9 @@ namespace Cleanup
             int? activeId = HttpContext.Session.GetInt32("activeUser");
             if(activeId != null) //Checked to make sure user is actually logged in
             {
+                User active = _context.users.Single(u => u.UserId == activeId);
+                ViewBag.active = active; 
+
                 ViewBag.allCleanups = _context.cleanups.ToList(); //all registered cleanup's currently created.
                 return View("Dashboard");
             }
@@ -78,6 +81,7 @@ namespace Cleanup
                     if(ModelState.IsValid)
                     {
                         CleanupEvent newCleanup = new CleanupEvent{
+                            Title = model.Title,
                             DescriptionOfArea = model.DescriptionOfArea,
                             DescriptionOfTrash = model.DescriptionOfTrash,
                             UserId = (int)activeId,
@@ -89,7 +93,8 @@ namespace Cleanup
                         _context.Add(newCleanup);
                         activeUser.Token-=1;
                         _context.SaveChanges();
-                        return RedirectToAction("Dashboard");
+                        CleanupEvent freshCleanup = _context.cleanups.OrderBy( c => c.CreatedAt ).Reverse().First();
+                        return RedirectToAction("AddPhoto", new { id = freshCleanup.CleanupId});
                     }
                 }
                 else
@@ -107,7 +112,7 @@ namespace Cleanup
             int? activeId = HttpContext.Session.GetInt32("activeUser");
             if(activeId != null) //Checked to make sure user is actually logged in
             {
-                List<CleanupEvent> possibleCleanup = _context.cleanups.Where( c => c.CleanupId == id).ToList();
+                List<CleanupEvent> possibleCleanup = _context.cleanups.Where( c => c.CleanupId == id).Include( c => c.Images ).Include( c => c.CleaningUsers).ToList();
                 if(possibleCleanup.Count == 1)
                 {
                     ViewBag.viewedCleanup = possibleCleanup[0];
@@ -133,6 +138,79 @@ namespace Cleanup
                         _context.SaveChanges();
                         return RedirectToAction("Dashboard");
                     }
+                }
+            }
+            return RedirectToAction("Index", "User");
+        }
+        [HttpPost]
+        [Route("approve/cleanup/{id}")]
+        public IActionResult ApproveCleanup(int id, int value)
+        {
+            int? activeId = HttpContext.Session.GetInt32("activeUser");
+            if(activeId != null) //Checked to make sure user is actually logged in
+            {
+                User activeUser = _context.users.Single( u => u.UserId == (int)activeId);
+                List<CleanupEvent> possibleCleanup = _context.cleanups.Where( c => c.CleanupId == id).ToList();
+                if(possibleCleanup.Count == 1 && activeUser.UserLevel == 9) //Confirm that event exists and that user is admin
+                {
+                    possibleCleanup[0].Pending = false;
+                    possibleCleanup[0].Value = value;
+                    _context.SaveChanges();
+                    return RedirectToAction("Dashboard");
+                }
+            }
+            return RedirectToAction("Index", "User");
+        }
+        [HttpGet]
+        [Route("close/cleanup/{id}")]
+        public IActionResult CloseCleanup(int id)
+        {
+            int? activeId = HttpContext.Session.GetInt32("activeUser");
+            if(activeId != null) //Checked to make sure user is actually logged in
+            {
+                User activeUser = _context.users.Single( u => u.UserId == (int)activeId);
+                List<CleanupEvent> possibleCleanup = _context.cleanups.Where( c => c.CleanupId == id).Include( c => c.CleaningUsers ).ToList();
+                if(possibleCleanup.Count == 1 && activeUser.UserLevel == 9) //Confirm that event exists and that user is admin
+                {
+                    int scoreEarned = (possibleCleanup[0].Value/possibleCleanup[0].CleaningUsers.Count);
+                    foreach(User cleaninguser in possibleCleanup[0].CleaningUsers)
+                    {
+                        cleaninguser.Score = scoreEarned;
+                        cleaninguser.Token += 1;
+                        return RedirectToAction("DeleteCleanup", new { id = possibleCleanup[0].CleanupId});
+                    }
+                }
+            }
+            return RedirectToAction("Index", "User");
+        }
+        [HttpGet]
+        [Route("add/photos/cleanup/{id}")]
+        public IActionResult AddPhoto(int id)
+        {
+            int? activeId = HttpContext.Session.GetInt32("activeUser");
+            if(activeId != null) //Checked to make sure user is actually logged in
+            {
+                List<CleanupEvent> possibleCleanup = _context.cleanups.Where( c => c.CleanupId == id).Include( c => c.Images ).ToList();
+                if(possibleCleanup.Count == 1)
+                {
+                    ViewBag.Cleanup = possibleCleanup[0];
+                    return View();
+                }
+            }
+            return RedirectToAction("Index", "User");
+        }
+        [HttpPost]
+        [Route("add/photos/cleanup/{id}")]
+        public IActionResult ProcessPhoto(int id)
+        {
+            int? activeId = HttpContext.Session.GetInt32("activeUser");
+            if(activeId != null) //Checked to make sure user is actually logged in
+            {
+                List<CleanupEvent> possibleCleanup = _context.cleanups.Where( c => c.CleanupId == id).ToList();
+                if(possibleCleanup.Count == 1 && possibleCleanup[0].UserId == (int)activeId)//Confirm that they went to an existing cleanup event and that they should be the one adding photos
+                {
+                    //Code to change photo filename, ERIC LOOK HERE
+                    return RedirectToAction("AddPhoto", new { id = possibleCleanup[0].CleanupId}); //After new photo added, redirect to photo add page so user can add more (up to 5 max)
                 }
             }
             return RedirectToAction("Index", "User");

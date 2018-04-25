@@ -9,6 +9,7 @@ namespace Cleanup.Models
     {
         [Key]
         public int CleanupId {get;set;}
+        public string Title{get;set;}
         public double Latitude{get;set;}
         public double Longitude{get;set;}
         public string DescriptionOfArea{get;set;}
@@ -20,10 +21,13 @@ namespace Cleanup.Models
         public User User {get;set;}
         public List<Image> Images{get;set;}
         public List<BoardMessage> BoardMessages {get;set;}
+        [InverseProperty("CleanupEvent")]
+        public List<User> CleaningUsers{get;set;}
         public CleanupEvent()
         {
             BoardMessages = new List<BoardMessage>();
             Images = new List<Image>();
+            CleaningUsers = new List<User>();
         }
     }
 }
