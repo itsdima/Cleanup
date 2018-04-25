@@ -15,15 +15,13 @@ namespace Cleanup.Models
         public string DescriptionOfTrash{get;set;}
         public int Value{get;set;}
         public bool Pending{get;set;}
-        [NotMapped]
-        public int CreatedByUserId{get;set;}
-        // [ForeignKey("User")]
+        [ForeignKey("User")]
         public int UserId { get; set; }
         public User User {get;set;}
-        public List<Image> TrashImages{get;set;}
+        public List<Image> Images{get;set;}
         public CleanupEvent()
         {
-            TrashImages = new List<Image>();
+            Images = new List<Image>();
         }
     }
 }

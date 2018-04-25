@@ -68,7 +68,7 @@ namespace Cleanup
                 HttpContext.Session.SetInt32("activeUser", activeUser.UserId);
                 return RedirectToAction("Dashboard", "Cleanup");//Go to actual site
             }
-            return View("Index"); //Failed registration attempt goes here
+            return View("RegistrationPartial"); //Failed registration attempt goes here
         }
         //Modified
         [HttpPost]
@@ -89,7 +89,7 @@ namespace Cleanup
                 }
             } 
             ViewBag.error = "Incorrect Login Information"; //Failed login attempt error message
-            return View("Index"); //Failed login attempt goes here
+            return View("LoginPartial"); //Failed login attempt goes here
         }
         //New
         [HttpGet]
@@ -150,13 +150,12 @@ namespace Cleanup
                 User activeUser = _context.users.Single( u => u.UserId == (int)activeId);
                 if(id == (int)activeId || activeUser.UserLevel == 9) //User can only edit profile if own or user is admin
                 {
+                    //Note -> user is unable to edit password!! This needs to be fixed but not a priority
                     User updatedUser = _context.users.Single( u => u.UserId == id);
-                    //This Next line will likely need extensive testing!!
                     if(ModelState.IsValid)
                     {
                         updatedUser.FirstName = model.FirstName;
                         updatedUser.LastName = model.LastName;
-                        updatedUser.Password = model.Password;
                         updatedUser.UserName = model.UserName;
                         updatedUser.Email = model.Email;
                         updatedUser.ProfilePic = model.ProfilePic;

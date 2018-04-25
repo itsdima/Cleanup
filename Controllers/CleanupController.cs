@@ -21,7 +21,7 @@ namespace Cleanup
             int? activeId = HttpContext.Session.GetInt32("activeUser");
             if(activeId != null) //Checked to make sure user is actually logged in
             {
-                List<CleanupEvent> allCleanups = _context.cleanups.ToList(); //all registered cleanup's currently created.
+                ViewBag.allCleanups = _context.cleanups.ToList(); //all registered cleanup's currently created.
                 return View("Dashboard");
             }
             return RedirectToAction("Index", "User");
@@ -38,7 +38,7 @@ namespace Cleanup
                     CleanupEvent newCleanup = new CleanupEvent{
                         DescriptionOfArea = model.DescriptionOfArea,
                         DescriptionOfTrash = model.DescriptionOfTrash,
-                        CreatedByUserId = (int)activeId,
+                        UserId = (int)activeId,
                         Pending = true,
                         Value = 0
                     };
