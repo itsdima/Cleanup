@@ -7,6 +7,7 @@ namespace Cleanup.Models
 {
     public class User : BaseEntity
     {
+        public int UserId {get;set;}
         public string FirstName{get;set;}
         public string LastName{get;set;}
         public string UserName{get;set;}
@@ -16,8 +17,9 @@ namespace Cleanup.Models
         public string ProfilePic{get;set;}
         public int Score{get;set;}
         public int Token{get;set;}
-        [ForeignKey("Cleanup")]
+        [ForeignKey("CleanupEvent")]
         public int? AttendingCleanupId{get;set;}
+        // public CleanupEvent AttendingCleanup{get;set;}
         public List<CleanupEvent> CreatedCleanups{get;set;}
         public List<Message> MessagesSent{get;set;}
         public List<Message> MessagesReceived{get;set;}
