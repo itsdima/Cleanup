@@ -19,10 +19,22 @@ namespace Cleanup
         //Untouched from copy/paste
         [HttpGet]
         [Route("")]
-        public IActionResult Index() //Display Login/Reg form
+        public IActionResult Index() //Display Welcome page
         {
             HttpContext.Session.Clear();
             return View();
+        }
+        [HttpGet]
+        [Route("signup")]
+        public IActionResult IndexReg(){
+            ViewBag.reg = true;
+            return View("Index");
+        }
+        [HttpGet]
+        [Route("signin")]
+        public IActionResult IndexLog(){
+            ViewBag.log = true;
+            return View("Index");
         }
         //modified
         [HttpPost]
@@ -61,20 +73,21 @@ namespace Cleanup
         //Modified
         [HttpPost]
         [Route("login")]
-        public IActionResult Login(string UserName, string Password) //Login Route
+        public IActionResult Login(UserLoginViewModel model) //Login Route
         {
-            List<User> possibleLogin = _context.users.Where( u => (string)u.UserName == (string)UserName).ToList(); //Check for existing username
-            if(possibleLogin.Count == 1)//Due to unique validation, if username exists, only 1 item should be returned
-            {
-                var Hasher = new PasswordHasher<User>();
-                if(0!= Hasher.VerifyHashedPassword(possibleLogin[0], possibleLogin[0].Password, Password)) //Confirm hashed passsword
+            if (ModelState.IsValid){ //so we only check the db if user input the right information
+                List<User> possibleLogin = _context.users.Where( u => (string)u.UserName == (string)model.UserNameLogin).ToList(); //Check for existing username
+                if(possibleLogin.Count == 1)//Due to unique validation, if username exists, only 1 item should be returned
                 {
-                    HttpContext.Session.SetString("userName", possibleLogin[0].UserName);
-                    HttpContext.Session.SetInt32("activeUser", possibleLogin[0].UserId);
-                    return Redirect("update/user/2");
-                    // return RedirectToAction("Dashboard", "Cleanup");//Go to actual site
+                    var Hasher = new PasswordHasher<User>();
+                    if(0!= Hasher.VerifyHashedPassword(possibleLogin[0], possibleLogin[0].Password, model.PasswordLogin)) //Confirm hashed passsword
+                    {
+                        HttpContext.Session.SetInt32("activeUser", possibleLogin[0].UserId);
+                        // return Redirect("/update/user/2");
+                        return RedirectToAction("Dashboard", "Cleanup");//Go to actual site
+                    }
                 }
-            }
+            } 
             ViewBag.error = "Incorrect Login Information"; //Failed login attempt error message
             return View("Index"); //Failed login attempt goes here
         }
@@ -139,7 +152,7 @@ namespace Cleanup
                 {
                     User updatedUser = _context.users.Single( u => u.UserId == id);
                     //This Next line will likely need extensive testing!!
-                    if((ModelState.IsValid || updatedUser.Email == model.Email || updatedUser.UserName == model.UserName) && Regex.IsMatch(model.Password, "^(?=.*[A-Za-z])(?=.*0-9)(?=.*[$@$!%*#?&])[A-Za-z0-9$@$!%*#?&]{8,}$"))
+                    if(ModelState.IsValid)
                     {
                         updatedUser.FirstName = model.FirstName;
                         updatedUser.LastName = model.LastName;
@@ -156,7 +169,7 @@ namespace Cleanup
                         _context.SaveChanges();
                     }
                 }
-                return RedirectToAction("");//...needs to redirect to somewhere that makes sense ##########
+                return RedirectToAction("Index");//...needs to redirect to somewhere that makes sense ##########
             }
             return RedirectToAction("Index");
         }

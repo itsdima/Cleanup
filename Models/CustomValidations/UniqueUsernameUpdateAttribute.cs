@@ -4,20 +4,20 @@ using Cleanup.Models;
 
 namespace Cleanup.Models
 {
-    public class UniqueEmailUpdateAttribute : ValidationAttribute
+    public class UniqueUsernameUpdateAttribute : ValidationAttribute
     {
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {
             UserUpdateViewModel test = (UserUpdateViewModel)validationContext.ObjectInstance;
-            if(test.PreviousEmail != (string)value)
+            if(test.UserName != (string)value)
             {
                 var _context = (CleanupContext) validationContext.GetService(typeof(CleanupContext));
                 var allUsers = _context.users;
                 foreach(var each in allUsers)
                 {
-                    if((string)value == (string)each.Email)
+                    if((string)value == (string)each.UserName)
                     {
-                        return new ValidationResult("Email already exists in database");
+                        return new ValidationResult("Username already exists in database");
                     }
                 }
             }

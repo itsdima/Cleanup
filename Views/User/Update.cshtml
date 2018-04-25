@@ -9,7 +9,7 @@
 <body>
     @model Cleanup.Models.UserUpdateViewModel
         <h1>Update</h1>
-        <form asp-controller="User" asp-action="ProcessUpdateUser" method="POST">
+        <form asp-controller="User" asp-action="ProcessUpdateUser" asp-route-id="@ViewBag.user.UserId" method="POST">
             <table>
                 <tr>
                     <td><label asp-for="FirstName"></label></td>

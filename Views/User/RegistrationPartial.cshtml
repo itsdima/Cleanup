@@ -1,0 +1,52 @@
+@model Cleanup.Models.UserRegisterViewModel;
+
+<h1>Registration</h1>
+    <form asp-controller="User" asp-action="Register" method="POST">
+        <table>
+            <tr>
+                <td><label asp-for="FirstName"></label></td>
+                <td><input asp-for="FirstName"></td>
+                <td><span asp-validation-for="FirstName"></span></td>
+            </tr>
+            <tr>
+                <td><label asp-for="LastName"></label></td>
+                <td><input asp-for="LastName"></td>
+                <td><span asp-validation-for="LastName"></span></td>
+            </tr>
+            <tr>
+                <td><label asp-for="UserName"></label></td>
+                <td><input asp-for="UserName"></td>
+                <td><span asp-validation-for="UserName"></span></td>
+            </tr>
+            <tr>
+                <td><label asp-for="Email"></label></td>
+                <td><input asp-for="Email"></td>
+                <td><span asp-validation-for="Email"></span></td>
+            </tr>
+            <tr>
+                <td><label asp-for="ProfilePic"></label></td>
+                <td><input asp-for="ProfilePic"></td>
+                <td><span asp-validation-for="ProfilePic"></span></td>
+            </tr>
+            <tr>
+                <td><label asp-for="Password"></label></td>
+                <td><input type="password" asp-for="Password"></td>
+                <td><span asp-validation-for="Password"></span></td>
+            </tr>
+            <tr>
+                <td><label asp-for="PasswordConfirmation"></label></td>
+                <td><input type="password" asp-for="PasswordConfirmation"></td>
+                <td><span asp-validation-for="PasswordConfirmation"></span></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td><button type="submit" class="btn btn-default">Sign Up</button></td>
+                <td></td>
+            </tr>
+        </table>
+    </form>
+    <p>Already registered? <a href="signin">Sign in</a></p>
+
+
+
+
