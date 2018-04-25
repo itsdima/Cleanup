@@ -1,50 +1,55 @@
 @model Cleanup.Models.UserRegisterViewModel;
-
+    <div>
+        <div id="logo-wrap">
+        <img id="logo" src="/images/logo_shadow.png" alt="cleanup logo">
+        </div>
 <h1>Registration</h1>
+<div class="reg-form">
     <form asp-controller="User" asp-action="Register" method="POST">
         <table>
             <tr>
-                <td><label asp-for="FirstName"></label></td>
-                <td><input asp-for="FirstName"></td>
+                <td></td>
+                <td><input class="form-control" asp-for="FirstName" placeholder="First Name"></td>
                 <td><span asp-validation-for="FirstName"></span></td>
             </tr>
             <tr>
-                <td><label asp-for="LastName"></label></td>
-                <td><input asp-for="LastName"></td>
+                <td></td>
+                <td><input class="form-control" asp-for="LastName" placeholder="Last Name"></td>
                 <td><span asp-validation-for="LastName"></span></td>
             </tr>
             <tr>
-                <td><label asp-for="UserName"></label></td>
-                <td><input asp-for="UserName"></td>
+                <td></td>
+                <td><input class="form-control" asp-for="UserName" placeholder="User Name"></td>
                 <td><span asp-validation-for="UserName"></span></td>
             </tr>
             <tr>
-                <td><label asp-for="Email"></label></td>
-                <td><input asp-for="Email"></td>
+                <td></td>
+                <td><input class="form-control" asp-for="Email" placeholder="Email"></td>
                 <td><span asp-validation-for="Email"></span></td>
             </tr>
             <tr>
-                <td><label asp-for="ProfilePic"></label></td>
-                <td><input asp-for="ProfilePic"></td>
+                <td></td>
+                <td><input class="form-control" asp-for="ProfilePic" placeholder="Profile Pic"></td>
                 <td><span asp-validation-for="ProfilePic"></span></td>
             </tr>
             <tr>
-                <td><label asp-for="Password"></label></td>
-                <td><input type="password" asp-for="Password"></td>
+                <td></td>
+                <td><input class="form-control" type="password" asp-for="Password" placeholder="Password"></td>
                 <td><span asp-validation-for="Password"></span></td>
             </tr>
             <tr>
-                <td><label asp-for="PasswordConfirmation"></label></td>
-                <td><input type="password" asp-for="PasswordConfirmation"></td>
+                <td></td>
+                <td><input class="form-control" type="password" asp-for="PasswordConfirmation" placeholder="Confirm Password"></td>
                 <td><span asp-validation-for="PasswordConfirmation"></span></td>
             </tr>
             <tr>
                 <td></td>
-                <td><button type="submit" class="btn btn-default">Sign Up</button></td>
+                <td><button style="width: 12em; margin: 0.3em;" class="btn btn-success" type="submit" class="btn btn-default">Sign Up</button></td>
                 <td></td>
             </tr>
         </table>
     </form>
+    </div>
     <p>Already registered? <a href="signin">Sign in</a></p>
 
 
