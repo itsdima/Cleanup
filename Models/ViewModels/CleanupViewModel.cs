@@ -7,10 +7,12 @@ namespace Cleanup.Models
 {
     public class CleanupViewModel : BaseEntity
     {
-        [Required(ErrorMessage="Address required")]
-        [Display(Name="Address: ")]
-        [MinLength(10)]
-        public string Address{get;set;}
+        [Required(ErrorMessage="Title required")]
+        [Display(Name="Title: ")]
+        [MaxLength(30, ErrorMessage="Title cannot be longer than 30 characters")]
+        public string Title{get;set;}
+        public double Latitude{get;set;}
+        public double Longitude{get;set;}
         [Required(ErrorMessage="Description required")]
         [Display(Name="Describe what to look for: ")]
         [MinLength(10, ErrorMessage="Description must be at least 10 characters long")]

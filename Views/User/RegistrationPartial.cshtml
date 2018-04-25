@@ -5,7 +5,7 @@
         </div>
 <h1>Registration</h1>
 <div class="reg-form">
-    <form asp-controller="User" asp-action="Register" method="POST">
+    <form asp-controller="User" asp-action="Register" method="POST" enctype="multipart/form-data">
         <table>
             <tr>
                 <td></td>
@@ -28,8 +28,8 @@
                 <td><span asp-validation-for="Email"></span></td>
             </tr>
             <tr>
-                <td></td>
-                <td><input class="form-control" asp-for="ProfilePic" placeholder="Profile Pic"></td>
+                <td><label asp-for="ProfilePic"></label></td>
+                <td><input type="file" name="ProfilePic"></td>
                 <td><span asp-validation-for="ProfilePic"></span></td>
             </tr>
             <tr>

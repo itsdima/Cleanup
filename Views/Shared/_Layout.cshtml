@@ -17,10 +17,6 @@
     </environment>
 </head>
 <body>
-    
-    <div class="container body-content">
-        @RenderBody()
-    </div>
 
     <environment include="Development">
         <script src="~/lib/jquery/dist/jquery.js"></script>
@@ -42,6 +38,10 @@
         </script>
         <script src="~/js/site.min.js" asp-append-version="true"></script>
     </environment>
+    
+    <div class="container body-content">
+        @RenderBody()
+    </div>
 
     @RenderSection("Scripts", required: false)
 </body>

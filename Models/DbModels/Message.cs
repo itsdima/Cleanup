@@ -10,11 +10,11 @@ namespace Cleanup.Models
         [Key]
         public int MessageId {get;set;}
         public string Content{get;set;}
-        [ForeignKey("RecipientUser")]
-        public int RecipientUserId{get;set;}
-        public User RecipientUser{get;set;}
-        [ForeignKey("SenderUser")]
-        public int SenderUserId{get;set;}
-        public User SenderUser{get;set;}
+        [ForeignKey("Recipient")]
+        public int RecipientId{get;set;}
+        public User Recipient{get;set;}
+        [ForeignKey("Sender")]
+        public int SenderId{get;set;}
+        public User Sender{get;set;}
     }
 }

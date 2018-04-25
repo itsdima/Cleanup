@@ -18,16 +18,19 @@ namespace Cleanup.Models
         public int Score{get;set;}
         public int Token{get;set;}
         [ForeignKey("CleanupEvent")]
-        public int? AttendingCleanupId{get;set;}
-        // public CleanupEvent AttendingCleanup{get;set;}
+        public int? CleanupEventId{get;set;}
+        public CleanupEvent CleanupEvent{get;set;}
+        [InverseProperty("User")]
         public List<CleanupEvent> CreatedCleanups{get;set;}
-        public List<Message> MessagesSent{get;set;}
-        public List<Message> MessagesReceived{get;set;}
+        [InverseProperty("Sender")]
+        public List<Message> Sent{get;set;}
+        [InverseProperty("Recipient")]
+        public List<Message> Received{get;set;}
         public User()
         {
             CreatedCleanups = new List<CleanupEvent>();
-            MessagesSent = new List<Message>();
-            MessagesReceived = new List<Message>();
+            Sent = new List<Message>();
+            Received = new List<Message>();
         }
     }
 }

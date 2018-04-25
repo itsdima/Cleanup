@@ -9,21 +9,23 @@ namespace Cleanup.Models
     {
         [Key]
         public int CleanupId {get;set;}
+        public string Title{get;set;}
         public double Latitude{get;set;}
         public double Longitude{get;set;}
         public string DescriptionOfArea{get;set;}
         public string DescriptionOfTrash{get;set;}
         public int Value{get;set;}
         public bool Pending{get;set;}
-        [NotMapped]
-        public int CreatedByUserId{get;set;}
-        // [ForeignKey("User")]
+        [ForeignKey("User")]
         public int UserId { get; set; }
         public User User {get;set;}
-        public List<Image> TrashImages{get;set;}
+        public List<Image> Images{get;set;}
+        [InverseProperty("CleanupEvent")]
+        public List<User> CleaningUsers{get;set;}
         public CleanupEvent()
         {
-            TrashImages = new List<Image>();
+            Images = new List<Image>();
+            CleaningUsers = new List<User>();
         }
     }
 }
