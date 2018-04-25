@@ -10,7 +10,8 @@ namespace Cleanup.Models
         [Required(ErrorMessage="Address required")]
         [Display(Name="Address: ")]
         [MinLength(10)]
-        public string Address{get;set;}
+        public double Latitude{get;set;}
+        public double Longitude{get;set;}
         [Required(ErrorMessage="Description required")]
         [Display(Name="Describe what to look for: ")]
         [MinLength(10, ErrorMessage="Description must be at least 10 characters long")]

@@ -26,6 +26,17 @@ namespace Cleanup
             }
             return RedirectToAction("Index", "User");
         }
+        [HttpGet]
+        [Route("add/cleanup")]
+        public IActionResult NewCleanup()
+        {
+            int? activeId = HttpContext.Session.GetInt32("activeUser");
+            if(activeId != null) //Checked to make sure user is actually logged in
+            {
+                return View();
+            }
+            return RedirectToAction("Index", "User");
+        }
         [HttpPost]
         [Route("add/cleanup")]
         public IActionResult AddCleanup(CleanupViewModel model)
@@ -33,16 +44,31 @@ namespace Cleanup
             int? activeId = HttpContext.Session.GetInt32("activeUser");
             if(activeId != null) //Checked to make sure user is actually logged in
             {
-                if(ModelState.IsValid)
+                User activeUser = _context.users.Single( u => u.UserId == (int)activeId);
+                if(activeUser.Token>0)
                 {
-                    CleanupEvent newCleanup = new CleanupEvent{
-                        DescriptionOfArea = model.DescriptionOfArea,
-                        DescriptionOfTrash = model.DescriptionOfTrash,
-                        UserId = (int)activeId,
-                        Pending = true,
-                        Value = 0
-                    };
+                    if(ModelState.IsValid)
+                    {
+                        CleanupEvent newCleanup = new CleanupEvent{
+                            DescriptionOfArea = model.DescriptionOfArea,
+                            DescriptionOfTrash = model.DescriptionOfTrash,
+                            UserId = (int)activeId,
+                            Pending = true,
+                            Value = 0,
+                            Latitude = model.Latitude,
+                            Longitude = model.Longitude
+                        };
+                        _context.Add(newCleanup);
+                        activeUser.Token-=1;
+                        _context.SaveChanges();
+                        return RedirectToAction("Dashboard");
+                    }
                 }
+                else
+                {
+                    ViewBag.error = "Insufficient tokens to report trash, go and help out more!";
+                }
+                return View("NewCleanup");
             }
             return RedirectToAction("Index", "User");
         }
@@ -53,7 +79,33 @@ namespace Cleanup
             int? activeId = HttpContext.Session.GetInt32("activeUser");
             if(activeId != null) //Checked to make sure user is actually logged in
             {
-
+                List<CleanupEvent> possibleCleanup = _context.cleanups.Where( c => c.CleanupId == id).ToList();
+                if(possibleCleanup.Count == 1)
+                {
+                    ViewBag.viewedCleanup = possibleCleanup[0];
+                    return View();
+                }
+            }
+            return RedirectToAction("Index", "User");
+        }
+        [HttpGet]
+        [Route("delete/cleanup/{id}")]
+        public IActionResult DeleteCleanup(int id)
+        {
+            int? activeId = HttpContext.Session.GetInt32("activeUser");
+            if(activeId != null) //Checked to make sure user is actually logged in
+            {
+                User activeUser = _context.users.Single( u => u.UserId == (int)activeId);
+                List<CleanupEvent> possibleCleanup = _context.cleanups.Where( c => c.CleanupId == id).ToList();
+                if(possibleCleanup.Count == 1)
+                {
+                    if(activeUser.UserLevel == 9 || (possibleCleanup[0].Pending = true && possibleCleanup[0].UserId == activeUser.UserId))
+                    {
+                        _context.cleanups.Remove(possibleCleanup[0]);
+                        _context.SaveChanges();
+                        return RedirectToAction("Dashboard");
+                    }
+                }
             }
             return RedirectToAction("Index", "User");
         }
