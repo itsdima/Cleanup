@@ -36,7 +36,6 @@ namespace Cleanup
             ViewBag.log = true;
             return View("Index");
         }
-        //modified
         [HttpPost]
         [Route("register")]
         public IActionResult Register(UserRegisterViewModel model) //Register User Route
@@ -70,7 +69,6 @@ namespace Cleanup
             }
             return View("RegistrationPartial"); //Failed registration attempt goes here
         }
-        //Modified
         [HttpPost]
         [Route("login")]
         public IActionResult Login(UserLoginViewModel model) //Login Route
@@ -91,7 +89,22 @@ namespace Cleanup
             ViewBag.error = "Incorrect Login Information"; //Failed login attempt error message
             return View("LoginPartial"); //Failed login attempt goes here
         }
-        //New
+        [HttpGet]
+        [Route("user/{id}")]
+        public IActionResult ViewUser(int id)
+        {
+            int? activeId = HttpContext.Session.GetInt32("activeUser");
+            if(activeId != null) //Checked to make sure user is actually logged in
+            {
+                List<User> possibleUser = _context.users.Where( u => u.UserId == id).ToList();
+                if(possibleUser.Count == 1)
+                {
+                    ViewBag.user = possibleUser[0];
+                    return View();
+                }
+            }
+            return RedirectToAction("Index");
+        }
         [HttpGet]
         [Route("delete/user/{id}")]
         public IActionResult DeleteUser(int id) //Delete User Route

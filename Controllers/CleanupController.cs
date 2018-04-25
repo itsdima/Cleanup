@@ -143,7 +143,30 @@ namespace Cleanup
                 {
                     possibleCleanup[0].Pending = false;
                     possibleCleanup[0].Value = value;
-                    
+                    _context.SaveChanges();
+                    return RedirectToAction("Dashboard");
+                }
+            }
+            return RedirectToAction("Index", "User");
+        }
+        [HttpGet]
+        [Route("close/cleanup/{id}")]
+        public IActionResult CloseCleanup(int id)
+        {
+            int? activeId = HttpContext.Session.GetInt32("activeUser");
+            if(activeId != null) //Checked to make sure user is actually logged in
+            {
+                User activeUser = _context.users.Single( u => u.UserId == (int)activeId);
+                List<CleanupEvent> possibleCleanup = _context.cleanups.Where( c => c.CleanupId == id).Include( c => c.CleaningUsers ).ToList();
+                if(possibleCleanup.Count == 1 && activeUser.UserLevel == 9) //Confirm that event exists and that user is admin
+                {
+                    int scoreEarned = (possibleCleanup[0].Value/possibleCleanup[0].CleaningUsers.Count);
+                    foreach(User cleaninguser in possibleCleanup[0].CleaningUsers)
+                    {
+                        cleaninguser.Score = scoreEarned;
+                        cleaninguser.Token += 1;
+                        return RedirectToAction("DeleteCleanup", new { id = possibleCleanup[0].CleanupId});
+                    }
                 }
             }
             return RedirectToAction("Index", "User");
@@ -180,6 +203,5 @@ namespace Cleanup
             }
             return RedirectToAction("Index", "User");
         }
-
     }
 }
