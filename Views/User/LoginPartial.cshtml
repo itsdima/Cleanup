@@ -1,0 +1,23 @@
+@model Cleanup.Models.UserLoginViewModel;
+
+<h1>Login</h1>
+@if (ViewBag.error != null){
+        <span>@ViewBag.error</span>
+    }
+<form asp-controller="User" asp-action="Login" method="POST">
+    <table>
+        <tr>
+            <td><label asp-for="UserNameLogin"></label></td>
+            <td><input asp-for="UserNameLogin"></td>
+        </tr>
+        <tr>
+            <td><label asp-for="PasswordLogin"></label></td>
+            <td><input asp-for="PasswordLogin"></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td><button type="submit" class="btn btn-default">Sign In</button></td>
+        </tr>
+    </table>
+</form>
+<p>Don't have the account? <a href="signup">Register</a></p>
