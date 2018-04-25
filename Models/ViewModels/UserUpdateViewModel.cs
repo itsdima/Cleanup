@@ -8,12 +8,11 @@ namespace Cleanup.Models
 {
     public class UserUpdateViewModel : BaseEntity
     {
-        [Display(Name = "First Name:")]
+        
         [Required(ErrorMessage="First name must not be blank")]
         [MinLength(2, ErrorMessage="First name must be at least 2 letters")]
         [RegularExpression(@"^([a-zA-Z \.\&\'\-]+)$", ErrorMessage="First name cannot contain numerals")]
         public string FirstName{get;set;}
-        [Display(Name = "Last Name:")]
         [Required(ErrorMessage="Last name must not be blank")]
         [MinLength(2, ErrorMessage="Last name must be at least 2 letters")]
         [RegularExpression(@"^([a-zA-Z \.\&\'\-]+)$", ErrorMessage="Last name cannot contain numerals")]
