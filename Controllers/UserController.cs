@@ -59,12 +59,13 @@ namespace Cleanup
                 _context.Add(newUser);
                 _context.SaveChanges();
                 User activeUser = _context.users.Single( u => (string)u.Email == (string)model.Email); //re-obtain newly created User for Id information
-                if(activeUser.Id == 1) 
+                if(activeUser.UserId == 1) 
                 {
                     activeUser.UserLevel = 9;//First user to admin
                     _context.SaveChanges();
                 }
-                HttpContext.Session.SetInt32("activeUser", activeUser.Id);
+                HttpContext.Session.SetString("userName", activeUser.UserName);
+                HttpContext.Session.SetInt32("activeUser", activeUser.UserId);
                 return RedirectToAction("Dashboard", "Cleanup");//Go to actual site
             }
             return View("Index"); //Failed registration attempt goes here
@@ -81,7 +82,8 @@ namespace Cleanup
                     var Hasher = new PasswordHasher<User>();
                     if(0!= Hasher.VerifyHashedPassword(possibleLogin[0], possibleLogin[0].Password, model.PasswordLogin)) //Confirm hashed passsword
                     {
-                        HttpContext.Session.SetInt32("activeUser", possibleLogin[0].Id);
+                        HttpContext.Session.SetInt32("activeUser", possibleLogin[0].UserId);
+                        // return Redirect("/update/user/2");
                         return RedirectToAction("Dashboard", "Cleanup");//Go to actual site
                     }
                 }
@@ -92,22 +94,22 @@ namespace Cleanup
         //New
         [HttpGet]
         [Route("delete/user/{id}")]
-        public IActionResult DeleteUser(int UserId) //Delete User Route
+        public IActionResult DeleteUser(int id) //Delete User Route
         {
             int? activeId = HttpContext.Session.GetInt32("activeUser");
             if(activeId != null) //Checked to make sure user is actually logged in
             {
-                User activeUser = _context.users.Single( u => u.Id == (int)activeId);
-                if(UserId == activeUser.Id || activeUser.UserLevel == 9) //If user is deleting themselves or active user is an admin
+                User activeUser = _context.users.Single( u => u.UserId == (int)activeId);
+                if(id == activeUser.UserId || activeUser.UserLevel == 9) //If user is deleting themselves or active user is an admin
                 {
                     User doomedUser;
-                    if(UserId == activeUser.Id) 
+                    if(id == activeUser.UserId) 
                     {
                         doomedUser = activeUser;
                     }
                     else
                     {
-                        doomedUser = _context.users.Single( u => u.Id == UserId); //Obtain user info if being deleted by Admin
+                        doomedUser = _context.users.Single( u => u.UserId == id); //Obtain user info if being deleted by Admin
                     }
                     _context.users.Remove(doomedUser);
                     _context.SaveChanges();
@@ -122,17 +124,17 @@ namespace Cleanup
         //New
         [HttpGet]
         [Route("update/user/{id}")]
-        public IActionResult UpdateUser(int UserId) //Load page with edit user form, needs to get user infomation first
+        public IActionResult UpdateUser(int id) //Load page with edit user form, needs to get user infomation first
         {
             int? activeId = HttpContext.Session.GetInt32("activeUser");
             if(activeId != null) //Checked to make sure user is actually logged in
             {
-                User activeUser = _context.users.Single( u => u.Id == (int)activeId);
-                if(UserId == (int)activeId || activeUser.UserLevel == 9) //User can only edit profile if own or user is admin
+                User activeUser = _context.users.SingleOrDefault( u => u.UserId == (int)activeId);
+                if(id == (int)activeId || activeUser.UserLevel == 9) //User can only edit profile if own or user is admin
                 {
-                    ViewBag.user = _context.users.Single( u => u.Id == UserId); //Place user to be edited into ViewBag
+                    ViewBag.user = _context.users.SingleOrDefault( u => u.UserId == id); //Place user to be edited into ViewBag
                     ViewBag.userLevel = activeUser.UserLevel; //Store active user level in ViewBag to impact what can be edited.
-                    return View(); //Load Page with edit user form
+                    return View("Update"); //Load Page with edit user form
                 }
                 return RedirectToAction("");//...needs to redirect to somewhere that makes sense ##########
             }
@@ -140,17 +142,17 @@ namespace Cleanup
         }
         [HttpPost]
         [Route("process/update/user/{id}")]
-        public IActionResult ProcessUpdateUser(UserUpdateViewModel model, int UserId)
+        public IActionResult ProcessUpdateUser(UserUpdateViewModel model, int id)
         {
             int? activeId = HttpContext.Session.GetInt32("activeUser");
             if(activeId != null) //Checked to make sure user is actually logged in
             {
-                User activeUser = _context.users.Single( u => u.Id == (int)activeId);
-                if(UserId == (int)activeId || activeUser.UserLevel == 9) //User can only edit profile if own or user is admin
+                User activeUser = _context.users.Single( u => u.UserId == (int)activeId);
+                if(id == (int)activeId || activeUser.UserLevel == 9) //User can only edit profile if own or user is admin
                 {
-                    User updatedUser = _context.users.Single( u => u.Id == UserId);
+                    User updatedUser = _context.users.Single( u => u.UserId == id);
                     //This Next line will likely need extensive testing!!
-                    if((ModelState.IsValid || updatedUser.Email == model.Email || updatedUser.UserName == model.UserName) && Regex.IsMatch(model.Password, "^(?=.*[A-Za-z])(?=.*0-9)(?=.*[$@$!%*#?&])[A-Za-z0-9$@$!%*#?&]{8,}$"))
+                    if(ModelState.IsValid)
                     {
                         updatedUser.FirstName = model.FirstName;
                         updatedUser.LastName = model.LastName;
@@ -158,10 +160,16 @@ namespace Cleanup
                         updatedUser.UserName = model.UserName;
                         updatedUser.Email = model.Email;
                         updatedUser.ProfilePic = model.ProfilePic;
+                        if(activeUser.UserLevel == 9)
+                        {
+                            updatedUser.Score = model.Score;
+                            updatedUser.Token = model.Token;
+                            updatedUser.UserLevel = model.UserLevel;
+                        }
                         _context.SaveChanges();
                     }
                 }
-                return RedirectToAction("");//...needs to redirect to somewhere that makes sense ##########
+                return RedirectToAction("Index");//...needs to redirect to somewhere that makes sense ##########
             }
             return RedirectToAction("Index");
         }

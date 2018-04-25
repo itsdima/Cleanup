@@ -22,9 +22,9 @@ namespace Cleanup
             if(activeId != null) //Checked to make sure user is actually logged in
             {
                 List<CleanupEvent> allCleanups = _context.cleanups.ToList(); //all registered cleanup's currently created.
-                return View("", allCleanups);
+                return View("Dashboard");
             }
-            return RedirectToAction("Index");
+            return RedirectToAction("Index", "User");
         }
         [HttpPost]
         [Route("add/cleanup")]
@@ -44,7 +44,7 @@ namespace Cleanup
                     };
                 }
             }
-            return RedirectToAction("Index");
+            return RedirectToAction("Index", "User");
         }
         [HttpGet]
         [Route("cleanup/{id}")]
@@ -55,7 +55,7 @@ namespace Cleanup
             {
 
             }
-            return RedirectToAction("Index");
+            return RedirectToAction("Index", "User");
         }
     }
 }
