@@ -12,5 +12,6 @@ namespace Cleanup.Models
         public string FileName{get;set;}
         [ForeignKey("CleanupEvent")]
         public int CleanupId{get;set;}
+        public CleanupEvent CleanupEvent {get;set; }
     }
 }

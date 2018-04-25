@@ -9,6 +9,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using Cleanup.Models;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.SignalR; //make sure to dotnet add package Microsoft.AspNetCore.SignalR -v 1.0.0-preview2-final AND npm install @aspnet/signalr
+using Cleanup.Hubs; //this is the hubs that are opened in the chatHub.cs file
 
 namespace Cleanup
 {
@@ -26,6 +28,7 @@ namespace Cleanup
         {
             services.AddDbContext<CleanupContext>(options => options.UseMySql(Configuration["DbInfo:ConnectionString"]));
             services.AddSession();
+            services.AddSignalR(); //to have access to this you need to transfer the signalr.json file from nodemodules -dist-browser to root-lib-signalr
             services.AddMvc();
         }
 
@@ -44,6 +47,10 @@ namespace Cleanup
 
             app.UseStaticFiles();
             app.UseSession();
+            app.UseSignalR(routes =>
+            {
+                routes.MapHub<ChatHub>("/hubs/chat"); //this opens the live hub at /hubs/chat ... this is where all connections should link to
+            });
             app.UseMvc();
         }
     }

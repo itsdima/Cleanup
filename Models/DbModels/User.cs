@@ -17,11 +17,14 @@ namespace Cleanup.Models
         public string ProfilePic{get;set;}
         public int Score{get;set;}
         public int Token{get;set;}
-        [ForeignKey("CleanupEvent")]
+        [ForeignKey("AttendingCleanup")]
         public int? AttendingCleanupId{get;set;}
-        // public CleanupEvent AttendingCleanup{get;set;}
+        public CleanupEvent AttendingCleanup{get;set;}
+        [InverseProperty("User")]
         public List<CleanupEvent> CreatedCleanups{get;set;}
+        [InverseProperty("SenderUser")]
         public List<Message> MessagesSent{get;set;}
+        [InverseProperty("RecipientUser")]
         public List<Message> MessagesReceived{get;set;}
         public User()
         {

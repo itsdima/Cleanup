@@ -22,7 +22,9 @@ namespace Cleanup
             if(activeId != null) //Checked to make sure user is actually logged in
             {
                 List<CleanupEvent> allCleanups = _context.cleanups.ToList(); //all registered cleanup's currently created.
-                return View("Dashboard");
+                User active = _context.users.Single(u => u.UserId == activeId);
+                ViewBag.active = active; 
+                return View("dashboard");
             }
             return RedirectToAction("Index", "User");
         }
@@ -38,7 +40,7 @@ namespace Cleanup
                     CleanupEvent newCleanup = new CleanupEvent{
                         DescriptionOfArea = model.DescriptionOfArea,
                         DescriptionOfTrash = model.DescriptionOfTrash,
-                        CreatedByUserId = (int)activeId,
+                        UserId = (int)activeId,
                         Pending = true,
                         Value = 0
                     };
