@@ -24,13 +24,22 @@ namespace Cleanup
             dict1["title"] = "test1test1test1test1test1test1"; //maxlength = 30!
             dict1["lng"] = "47.644710";
             dict1["lat"] = "-122.205378";
+            dict1["mboard"] = "mboard/1";
             dict2["title"] = "test2";
             dict2["lng"] = "47.626203";
             dict2["lat"] = "-122.201258";
+            dict2["mboard"] = "mboard/2";
             markers.Add(dict1);
             markers.Add(dict2);
             ViewBag.markers = markers;
             return View("dashboard");
+        }
+        //message test
+        [HttpGet]
+        [Route("mboard/{id}")]
+        public IActionResult Test2(int id){
+            //retrive the messages by event with id and INCLUDE boardmessages;
+            return View("mboard");
         }
 
         [HttpGet]
